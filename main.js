@@ -16,7 +16,7 @@ const createWindow = () => {
 
         frame: false,
         titleBarStyle: 'hidden',
-        titleBarOverlay: false,
+        titleBarOverlay: { color: 'black', 'symbolColor': 'white', height: 16 },
 
         fullscreen: false,
         fullScreenable: 'true',
@@ -42,14 +42,16 @@ const createWindow = () => {
             preload: path.join(__dirname, '/js/preload.js')
         }
     })
+    win.setPosition(1920, -1080, false)
+    win.setFullScreen(true)
     app.setUserTasks([])
     const icon = nativeImage.createFromPath('./img/icon.png')
     win.setIcon(icon)
     //win.setTitleBarOverlay({ color: 'red', 'symbolColor': 'blue', height: 16 })
-    win.center()
+    //win.center()
 
-    win.loadFile('index.html')
-    //win.loadFile('C:\\Users\\franc\\source\\repos\\MovieDbAssistant\\MovieDbAssistant.App\\bin\\Debug\\net8.0-windows10.0.22621.0\\output\\ok.ru\\index.html')
+    //win.loadFile('index.html')
+    win.loadFile('C:\\Users\\franc\\source\\repos\\MovieDbAssistant\\MovieDbAssistant.App\\bin\\Debug\\net8.0-windows10.0.22621.0\\output\\query2\\index.html')
 }
 
 const createTray = () => {
@@ -73,7 +75,7 @@ const setupIpc = () => {
 
 app.whenReady().then(() => {
     setupIpc()
-    nativeTheme.themeSource = "dark"
+    nativeTheme.themeSource = "system"
     createTray()
     createWindow()
 })
