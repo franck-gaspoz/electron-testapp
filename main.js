@@ -39,11 +39,11 @@ const createWindow = () => {
         //skipTaskbar: true,
 
         webPreferences: {
-            preload: path.join(__dirname, 'preload.js')
+            preload: path.join(__dirname, '/js/preload.js')
         }
     })
     app.setUserTasks([])
-    const icon = nativeImage.createFromPath('icon.png')
+    const icon = nativeImage.createFromPath('./img/icon.png')
     win.setIcon(icon)
     //win.setTitleBarOverlay({ color: 'red', 'symbolColor': 'blue', height: 16 })
     win.center()
@@ -53,7 +53,7 @@ const createWindow = () => {
 }
 
 const createTray = () => {
-    const icon = nativeImage.createFromPath('icon.png')
+    const icon = nativeImage.createFromPath('./img/icon.png')
     const tray = new Tray(icon)
     tray.setToolTip('Electron App tooltip')
     tray.setTitle('Electron App title')
