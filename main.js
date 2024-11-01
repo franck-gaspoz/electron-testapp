@@ -46,12 +46,12 @@ const createWindow = () => {
     win.setFullScreen(true)
     app.setUserTasks([])
     const icon = nativeImage.createFromPath('./img/icon.png')
+    win.setAspectRatio(1920 / 1080, { width: 40, height: 50 })
     win.setIcon(icon)
     //win.setTitleBarOverlay({ color: 'red', 'symbolColor': 'blue', height: 16 })
     //win.center()
-
-    //win.loadFile('index.html')
-    win.loadFile('C:\\Users\\franc\\source\\repos\\MovieDbAssistant\\MovieDbAssistant.App\\bin\\Debug\\net8.0-windows10.0.22621.0\\output\\query2\\index.html')
+    win.loadFile('index.html')
+    //win.loadFile('C:\\Users\\franc\\source\\repos\\MovieDbAssistant\\MovieDbAssistant.App\\bin\\Debug\\net8.0-windows10.0.22621.0\\output\\ok.ru.arp188\\index.html')
 }
 
 const createTray = () => {
