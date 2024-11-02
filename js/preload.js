@@ -7,3 +7,5 @@ contextBridge.exposeInMainWorld('versions', {
     ping: () => ipcRenderer.invoke('ping')
     // we can also expose variables, not just functions
 })
+
+contextBridge.exposeInMainWorld("IN_DESKTOP_ENV", true);
