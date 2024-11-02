@@ -5,18 +5,80 @@ const {
     nativeImage,
     BrowserWindow,
     nativeTheme,
-    ipcMain
+    ipcMain,
+    webFrameMain
 } = require('electron')
 
 const path = require('node:path')
 
+const Signal_Window_DidNavigate = 'Signal_Window_DidNavigate'
+const Signal_Window_State_Changed_Enter_FullScreen = 'Signal_Window_State_Changed_Enter_FullScreen'
+const Signal_Window_State_Changed_Leave_FullScreen = 'Signal_Window_State_Changed_Leave_FullScreen'
+const Signal_Window_State_Changed_Minimize = 'Signal_Window_State_Changed_Minimize'
+const Signal_Window_State_Changed_Restore = 'Signal_Window_State_Changed_Restore'
+const Signal_Window_State_Changed_Maximize = 'Signal_Window_State_Changed_Maximize'
+const Signal_Window_State_Changed_Unmaximize = 'Signal_Window_State_Changed_Unmaximize'
+
+const sendWindowEvent = (win, name, value, frame) => {
+    frame = frame || win.webContents.mainFrame
+    const valueStr = JSON.stringify(value)
+    const code = "if (typeof signal != 'undefined') signal('"
+        + name
+        + "','"
+        + valueStr
+        + "')"
+    console.log("SIGNAL: " + name + " ----- " + valueStr)
+    frame.executeJavaScript(code)
+}
+
+const setupEvents = win => {
+
+    win.webContents.on(
+        'did-frame-navigate',
+        (event, url, httpResponseCode, httpStatusText, isMainFrame, frameProcessId, frameRoutingId) => {
+            const frame = webFrameMain.fromId(frameProcessId, frameRoutingId)
+            if (frame) {
+                sendWindowEvent(win, Signal_Window_DidNavigate, url, frame)
+            }
+        }
+    )
+
+    win.on('enter-full-screen', (event, isAlwaysOnTop) => {
+        sendWindowEvent(win, Signal_Window_State_Changed_Enter_FullScreen, {})
+    })
+    win.on('leave-full-screen', (event, isAlwaysOnTop) => {
+        sendWindowEvent(win, Signal_Window_State_Changed_Leave_FullScreen, {})
+    })
+    win.on('minimize', (event, isAlwaysOnTop) => {
+        sendWindowEvent(win, Signal_Window_State_Changed_Minimize, {})
+    })
+    win.on('restore', (event, isAlwaysOnTop) => {
+        sendWindowEvent(win, Signal_Window_State_Changed_Restore, {})
+    })
+    win.on('maximize', (event, isAlwaysOnTop) => {
+        sendWindowEvent(win, Signal_Window_State_Changed_Maximize, {})
+    })
+    win.on('unmaximize', (event, isAlwaysOnTop) => {
+        sendWindowEvent(win, Signal_Window_State_Changed_Unmaximize, {})
+    })
+}
+
 const createWindow = () => {
+
+    const refW = 1920
+    const refH = 1080
+    const aspectRatio = refW / refH
+    const medW = 1920 * 0.8
+    const medH = medW / aspectRatio
+    const minW = 400
+    const minH = minW / aspectRatio
+
     const win = new BrowserWindow({
         title: "Electron App",
 
         frame: false,
         titleBarStyle: 'hidden',
-        titleBarOverlay: { color: 'black', 'symbolColor': 'white', height: 16 },
+        //titleBarOverlay: { color: 'black', 'symbolColor': 'white', height: 16 },  // buttons overlay
 
         fullscreen: false,
         fullScreenable: 'true',
@@ -25,16 +87,11 @@ const createWindow = () => {
         resizable: true,
         movable: true,
         visibleOnAllWorkspaces: false,
-        /*
-        width: 1700,
-        height: 956,
-        minWidth: 1700,
-        minHeight: 956,
-        */
-        width: 800,
-        height: 600,
-        minWidth: 400,
-        minHeight: 200,
+
+        width: medW,
+        height: medH,
+        minWidth: minW,
+        minHeight: minH,
 
         //skipTaskbar: true,
 
@@ -42,16 +99,25 @@ const createWindow = () => {
             preload: path.join(__dirname, '/js/preload.js')
         }
     })
-    win.setPosition(1920, -1080, false)
+
+    win.setPosition(
+        0,//1920,
+        -1080,
+        false)     // for dev
+
+    win.center()
+    setupEvents(win)
     win.setFullScreen(true)
     app.setUserTasks([])
     const icon = nativeImage.createFromPath('./img/icon.png')
-    win.setAspectRatio(1920 / 1080, { width: 40, height: 50 })
+    win.setAspectRatio(aspectRatio, { width: minW, height: minH })
     win.setIcon(icon)
-    //win.setTitleBarOverlay({ color: 'red', 'symbolColor': 'blue', height: 16 })
-    //win.center()
-    win.loadFile('index.html')
-    //win.loadFile('C:\\Users\\franc\\source\\repos\\MovieDbAssistant\\MovieDbAssistant.App\\bin\\Debug\\net8.0-windows10.0.22621.0\\output\\ok.ru.arp188\\index.html')
+    ////win.setTitleBarOverlay({ color: 'red', 'symbolColor': 'blue', height: 16 })
+
+    //win.loadFile('index.html')
+    win.loadFile('C:\\Users\\franc\\source\\repos\\MovieDbAssistant\\MovieDbAssistant.App\\bin\\Debug\\net8.0-windows10.0.22621.0\\output\\ok.ru.arp188\\index.html')
+
+    sendWindowEvent(win, Signal_Window_State_Changed_Enter_FullScreen, {})
 }
 
 const createTray = () => {
