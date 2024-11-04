@@ -11,6 +11,7 @@ const {
 
 const path = require('node:path')
 
+// emetted
 const Signal_Window_DidNavigate = 'Signal_Window_DidNavigate'
 const Signal_Window_State_Changed_Enter_FullScreen = 'Signal_Window_State_Changed_Enter_FullScreen'
 const Signal_Window_State_Changed_Leave_FullScreen = 'Signal_Window_State_Changed_Leave_FullScreen'
@@ -18,6 +19,11 @@ const Signal_Window_State_Changed_Minimize = 'Signal_Window_State_Changed_Minimi
 const Signal_Window_State_Changed_Restore = 'Signal_Window_State_Changed_Restore'
 const Signal_Window_State_Changed_Maximize = 'Signal_Window_State_Changed_Maximize'
 const Signal_Window_State_Changed_Unmaximize = 'Signal_Window_State_Changed_Unmaximize'
+
+// accepted
+const Command_FullScreen_Toggle = 'Command_FullScreen_Toggle'
+const Command_Minize = 'Command_Minimize'
+const Command_Maximize = 'Command_Maximize'
 
 const sendWindowEvent = (win, name, value, frame) => {
     frame = frame || win.webContents.mainFrame
@@ -68,7 +74,7 @@ const createWindow = () => {
     const refW = 1920
     const refH = 1080
     const aspectRatio = refW / refH
-    const medW = 1920 * 0.8
+    const medW = refW * 0.8
     const medH = medW / aspectRatio
     const minW = 400
     const minH = minW / aspectRatio
@@ -136,7 +142,9 @@ const createTray = () => {
 }
 
 const setupIpc = () => {
-    ipcMain.handle('ping', () => 'pong')
+    ipcMain.handle('send', (signal, data) => {
+        console.log("[main] handle signal: " + signal)
+    })
 }
 
 app.whenReady().then(() => {
