@@ -10,7 +10,7 @@ const send = (name, data) => {
 }
 
 contextBridge.exposeInMainWorld(Vars_App, {
-    // first window state (from init)
+    // first window state (from init) [fullscreen state]
     isWindowed: false,
     isMinimized: false,
     isMaximized: false,
