@@ -93,6 +93,7 @@ const createWindow = () => {
         resizable: true,
         movable: true,
         visibleOnAllWorkspaces: false,
+        alwaysOnTop: true,
 
         width: medW,
         height: medH,
@@ -121,7 +122,7 @@ const createWindow = () => {
     ////win.setTitleBarOverlay({ color: 'red', 'symbolColor': 'blue', height: 16 })
 
     //win.loadFile('index.html')
-    win.loadFile('C:\\Users\\franc\\source\\repos\\MovieDbAssistant\\MovieDbAssistant.App\\bin\\Debug\\net8.0-windows10.0.22621.0\\win-x64\\output\\ok.ru\\index.html')
+    win.loadFile('C:\\Users\\franc\\source\\repos\\MovieDbAssistant\\MovieDbAssistant.App\\bin\\Debug\\net8.0-windows10.0.22621.0\\win-x64\\output\\Catalog Nov. 2024\\index.html')
     sendWindowEvent(win, Signal_Window_State_Changed_Enter_FullScreen, {})
 }
 
