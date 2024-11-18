@@ -13,8 +13,10 @@ from @ [https://www.electronjs.org/docs/latest/tutorial/tutorial-first-app](http
 
 https://www.electronjs.org/docs/latest/tutorial/tutorial-first-app
 
-// dos (ps: marche pas)
-chcp 65001
+// shell UTF8
+"windows": {
+  "runtimeExecutable": "chcp 65001 && ${workspaceFolder}/node_modules/.bin/electron.cmd"
+}
 
 npm init
 

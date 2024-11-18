@@ -6,12 +6,16 @@ const {
     BrowserWindow,
     nativeTheme,
     ipcMain,
-    webFrameMain
+    webFrameMain,
+    globalShortcut
 } = require('electron')
 
 const path = require('node:path')
 
-// emetted
+// keyboard shortcuts
+const Shortcut_MainWindow_ToggleState = 'Control+Shift+X'
+
+// emitted
 const Signal_Window_DidNavigate = 'Signal_Window_DidNavigate'
 const Signal_Window_State_Changed_Enter_FullScreen = 'Signal_Window_State_Changed_Enter_FullScreen'
 const Signal_Window_State_Changed_Leave_FullScreen = 'Signal_Window_State_Changed_Leave_FullScreen'
@@ -25,6 +29,9 @@ const Command_FullScreen_Toggle = 'Command_FullScreen_Toggle'
 const Command_Minize = 'Command_Minimize'
 const Command_Maximize = 'Command_Maximize'
 
+/** @type {BrowserWindow} browser window */
+var mainWindow = null
+
 const sendWindowEvent = (win, name, value, frame) => {
     frame = frame || win.webContents.mainFrame
     const valueStr = JSON.stringify(value)
@@ -33,11 +40,63 @@ const sendWindowEvent = (win, name, value, frame) => {
         + "','"
         + valueStr
         + "')"
-    console.log("SIGNAL: " + name + " ----- " + valueStr)
+    console.log("⚡ SIGNAL ⚡ " + name + " ----- " + valueStr)
     frame.executeJavaScript(code)
 }
 
+/** toggle main window state (fullscreen -> restore -> minimized -> fullscreen */
+const toggleMainWindowState = () => {
+
+    console.debug("🔵 toggle main window state");
+
+    if (!mainWindow) return
+
+    console.debug("fullscreen:"+mainWindow.isFullScreen())
+    console.debug("maximized:"+mainWindow.isMaximized())
+    console.debug("minimized:"+mainWindow.isMinimized())
+    
+    if (mainWindow.isFullScreen())
+        mainWindow.setFullScreen(false)
+    else {
+        if (mainWindow.isMaximized())
+        {
+            mainWindow.unmaximize()
+        } else {
+            if (mainWindow.isMinimized())
+            {
+                mainWindow.restore()
+                mainWindow.setFullScreen(true)
+            }
+            else
+                /* !full,!maximized,!minimized */
+                mainWindow.minimize()
+        }
+    }
+}
+
+/** setup keyboard shortcuts  */
+const setupKeyboardShortcuts = () => {
+
+    var check = globalShortcut.register(Shortcut_MainWindow_ToggleState, () => {
+        console.debug("#️⃣  "+Shortcut_MainWindow_ToggleState+" pressed");
+        toggleMainWindowState()
+    });
+    if (check) console.debug("🟢 "+Shortcut_MainWindow_ToggleState+" registered successfully");
+
+    /*globalShortcut.registerAll(["CommandOrControl+X",
+        "CommandOrControl+Y"], () => {
+            console.log("One Global Shortcut defined " +
+                "in registerAll() method is Pressed.");
+        });*/
+}
+
+/**
+ * setup events
+ * @param {BrowserWindow} win browser window
+ */
 const setupEvents = win => {
+
+    console.debug("setup events");
 
     win.webContents.on(
         'did-frame-navigate',
@@ -69,7 +128,10 @@ const setupEvents = win => {
     })
 }
 
+/** create window */
 const createWindow = () => {
+
+    console.debug("create window");
 
     const refW = 1920
     const refH = 1080
@@ -93,12 +155,14 @@ const createWindow = () => {
         resizable: true,
         movable: true,
         visibleOnAllWorkspaces: false,
-        alwaysOnTop: true,
+        //alwaysOnTop: true,
 
         width: medW,
         height: medH,
         minWidth: minW,
         minHeight: minH,
+
+        show: false,
 
         //skipTaskbar: true,
 
@@ -107,6 +171,12 @@ const createWindow = () => {
         }
     })
 
+    mainWindow = win
+    ////win.setTitleBarOverlay({ color: 'red', 'symbolColor': 'blue', height: 16 })
+    //win.loadFile('index.html')
+    //win.loadFile('C:\\Users\\franc\\source\\repos\\MovieDbAssistant\\MovieDbAssistant.App\\bin\\Debug\\net8.0-windows10.0.22621.0\\win-x64\\output\\Catalog Nov. 2024\\index.html')
+    win.loadFile('C:\\Users\\franc\\source\\repos\\MovieDbAssistant\\MovieDbAssistant.App\\bin\\Debug\\net8.0-windows10.0.22621.0\\win-x64\\output\\Sample catalog\\index.html')
+    
     win.setPosition(
         0,//1920,
         -1080,
@@ -114,19 +184,27 @@ const createWindow = () => {
 
     win.center()
     setupEvents(win)
-    win.setFullScreen(true)
     app.setUserTasks([])
     const icon = nativeImage.createFromPath('./img/icon.png')
     win.setAspectRatio(aspectRatio, { width: minW, height: minH })
     win.setIcon(icon)
-    ////win.setTitleBarOverlay({ color: 'red', 'symbolColor': 'blue', height: 16 })
 
-    //win.loadFile('index.html')
-    win.loadFile('C:\\Users\\franc\\source\\repos\\MovieDbAssistant\\MovieDbAssistant.App\\bin\\Debug\\net8.0-windows10.0.22621.0\\win-x64\\output\\Catalog Nov. 2024\\index.html')
-    sendWindowEvent(win, Signal_Window_State_Changed_Enter_FullScreen, {})
+    win.setFullScreen(true)
+    
+    win.once("ready-to-show", () => {
+
+        console.debug("⭐⚡ready-to-show: show");
+
+        win.show()
+        sendWindowEvent(win, Signal_Window_State_Changed_Enter_FullScreen, {})
+    })
 }
 
+/** create tray */
 const createTray = () => {
+
+    console.debug("create tray");
+
     const icon = nativeImage.createFromPath('./img/icon.png')
     const tray = new Tray(icon)
     tray.setToolTip('Electron App tooltip')
@@ -141,19 +219,41 @@ const createTray = () => {
     tray.setContextMenu(contextMenu)
 }
 
+/** setup ipc */
 const setupIpc = () => {
+
+    console.debug("setup Ipc");
+
     ipcMain.handle('send', (signal, data) => {
-        console.log("[main] handle signal: " + signal)
+        console.log("⭐⚡[main] handle signal: " + signal)
     })
 }
 
 app.whenReady().then(() => {
+
+    console.debug("⭐⚡whenReady: create window");
+
     setupIpc()
-    nativeTheme.themeSource = "system"
+    setupKeyboardShortcuts()
+    nativeTheme.themeSource = "dark"
     createTray()
     createWindow()
+
+    app.on('activate', function () {
+
+        console.debug("⭐⚡activate");
+
+        // On macOS it's common to re-create a window in the app when the
+        // dock icon is clicked and there are no other windows open.
+        if (BrowserWindow.getAllWindows().length === 0) createWindow()
+      })    
 })
 
 app.on('window-all-closed', () => {
+
+    console.debug("⭐⚡window-all-closed");
+    
+    // On OS X it is common for applications and their menu bar
+    // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin') app.quit()
 })

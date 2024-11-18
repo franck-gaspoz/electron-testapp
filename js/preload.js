@@ -15,13 +15,13 @@ contextBridge.exposeInMainWorld(Vars_App, {
     isMinimized: false,
     isMaximized: false,
     // signal handler
-    e_send: (signal, data) => {
+    signal: (signal, data) => {
         console.log("[Preload] handle signal: " + signal)
         console.debug(data)
         send(signal, data)
     },
     // eval
-    e_eval: text => {
+    eval: text => {
         eval(text)
     },
     dependencies: {
