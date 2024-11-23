@@ -13,7 +13,9 @@
 !define BMPFILE "assets\\moviedbviewersnap1.bmp"
 !define ICONFILE "assets\\movie.ico"
 !define ICONFILEINST "movie.ico"
+!define READMEFILEINST "readme.txt"
 !define LICENSEFILE "assets\\license.rtf"
+!define READMEFILE "assets\\readme.txt"
 !define COMPANYNAME "Franck Gaspoz Software"
 !define DESCRIPTION "Display && browse movie catalogs"
 
@@ -26,7 +28,7 @@
 # It is possible to use "mailto:" links in here to open the email client
 !define HELPURL "https://github.com/franck-gaspoz/MovieDbAssistant/blob/main/README.md" ; "Support Information" link
 !define UPDATEURL "https://github.com/franck-gaspoz/MovieDbAssistant/blob/main/README.md" ; "Product Updates" link
-!define ABOUTURL "hhttps://github.com/franck-gaspoz/MovieDbAssistant/blob/main/README.md" ; "Publisher" link
+!define ABOUTURL "https://github.com/franck-gaspoz/MovieDbAssistant/blob/main/README.md" ; "Publisher" link
 
 # files from package (out/)
 !define PKG "../out/Electron Test App-win32-x64"
@@ -71,17 +73,29 @@ outFile "${APPNAME}-${APPVER}.exe"
 !define MUI_ICON "${ICONFILE}"
 !define MUI_UNICON "${ICONFILE}"
 
+!define MUI_BGCOLOR 111122
 !define MUI_TEXTCOLOR EEEEEE
 !define MUI_HEADERIMAGE_RIGHT
 !define MUI_HEADER_TRANSPARENT_TEXT
-!define MUI_BGCOLOR 111122
+!define MUI_INSTFILESPAGE_COLORS "111122 EEEEEE"
+!define MUI_INSTFILESPAGE_PROGRESSBAR colored
+!define MUI_FINISHPAGE_NOAUTOCLOSE
+!define MUI_LICENSEPAGE_RADIOBUTTONS
+
+!define MUI_FINISHPAGE_RUN "${APPEXE}"
+!define MUI_FINISHPAGE_SHOWREADME "${READMEFILE}"
+!define MUI_FINISHPAGE_NOREBOOTSUPPORT
+!define MUI_FINISHPAGE_LINK_COLOR AAAAFF
+!define MUI_FINISHPAGE_LINK "more on GitHub: Movie Db Assistant | Movie Db Scraper"
+!define MUI_FINISHPAGE_LINK_LOCATION "${ABOUTURL}"
 
 # the old style gradiant behind setup window
 #BGGradient
-AutoCloseWindow true
+#AutoCloseWindow true
 BrandingText " "
 Caption "${APPNAME} ${APPVER} Setup"
-InstallColors EEEEEE 000000 #no effect
+#InstallColors EEEEEE 000000 #no effect
+ShowInstDetails show
 
 !include LogicLib.nsh
 
@@ -122,10 +136,9 @@ section "install"
 	# Files for the install directory - to build the installer, these should be in the same directory as the install script (this file)
 	setOutPath $INSTDIR
 	# Files added here should be removed by the uninstaller (see section "uninstall")
-	#file "app.exe"
-	#file "logo.ico"
 
 	file "${ICONFILE}"
+	file "${READMEFILE}"
 	#file /r "${PKG}\\*.*" 	; disabled for speed
 
 	# Add any other files for the install directory (license files, app data, etc) here
@@ -179,6 +192,7 @@ section "uninstall"
 	# Remove files
 
 	delete "$INSTDIR\\${ICONFILEINST}"
+	delete "$INSTDIR\\${READMEFILEINST}"
  
 	# Always delete uninstaller as the last action
 	delete "$INSTDIR\\${UNINSTALLEXE}"
