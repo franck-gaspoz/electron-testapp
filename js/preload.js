@@ -5,20 +5,23 @@ const Vars_InDesktopEnv = 'IN_DESKTOP_ENV'
 
 const { contextBridge, ipcRenderer } = require('electron')
 
-const send = (name, data) => {
-    ipcRenderer.invoke(Command_Send, [name, data])
+/** send a signal to the ipc renderer */
+const sendIpc = (signal, data) => {
+    return ipcRenderer.invoke(Command_Send, signal, data)
 }
 
 contextBridge.exposeInMainWorld(Vars_App, {
     // first window state (from init) [fullscreen state]
     isWindowed: false,
     isMinimized: false,
-    isMaximized: false,
-    // signal handler
-    signal: (signal, data) => {
-        console.log("[Preload] handle signal: " + signal)
-        console.debug(data)
-        send(signal, data)
+    isMaximized: false,    
+    // signal sender
+    send: (signal, data) => {
+        if (data===undefined) data = {}
+        console.log("⭐⚡[Preload] handle signal: " 
+            + signal
+            + ' 📚 ' + data)
+        sendIpc(signal+'', data)
     },
     // eval
     eval: text => {

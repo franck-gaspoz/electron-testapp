@@ -2,6 +2,9 @@
 
 # electron test app
 ___
+
+## electronjs
+
 from @ [https://www.electronjs.org/docs/latest/tutorial/tutorial-first-app](https://www.electronjs.org/docs/latest/tutorial/tutorial-first-app)
 
 *notes*
@@ -76,4 +79,36 @@ app.on('window-all-closed', () => {
 })
 
 // etc...
+```
+
+------------------------------------------------------------------------
+
+## electron app user agent
+
+```
+navigator.userAgent
+'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) electron-testapp/1.0.0 Chrome/130.0.6723.59 Electron/33.0.2 Safari/537.36'
+```
+
+## electron-forge
+
+from @ [https://www.electronjs.org/docs/latest/tutorial/tutorial-first-app](https://www.electronjs.org/docs/latest/tutorial/tutorial-first-app)
+
+```dos
+npm install --save-dev @electron-forge/cli
+
+# migrate existing electron-app
+
+# or create from scratch using template
+
+```
+
+### usefull commands
+
+```ps1
+# cleanup windows icons cache
+ie4uinit.exe -show
+
+# make forge appx
+npx electron-forge make --targets=@electron-forge/maker-appx
 ```

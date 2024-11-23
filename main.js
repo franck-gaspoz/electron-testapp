@@ -13,7 +13,10 @@ const {
 const path = require('node:path')
 
 // keyboard shortcuts
-const Shortcut_MainWindow_ToggleState = 'Control+Shift+X'
+const Shortcut_MainWindow_ToggleState = 'CommandOrControl+Shift+X'
+const Shortcut_MainWindow_Fullscreen = 'CommandOrControl+Shift+J'
+const Shortcut_MainWindow_Minimize = 'CommandOrControl+Shift+L'
+const Shortcut_MainWindow_ToggleOnTop = 'CommandOrControl+Shift+M'
 
 // emitted
 const Signal_Window_DidNavigate = 'Signal_Window_DidNavigate'
@@ -25,23 +28,43 @@ const Signal_Window_State_Changed_Maximize = 'Signal_Window_State_Changed_Maximi
 const Signal_Window_State_Changed_Unmaximize = 'Signal_Window_State_Changed_Unmaximize'
 
 // accepted
-const Command_FullScreen_Toggle = 'Command_FullScreen_Toggle'
-const Command_Minize = 'Command_Minimize'
+const Command_FullScreen = 'Command_FullScreen'
+const Command_Minimize = 'Command_Minimize'
 const Command_Maximize = 'Command_Maximize'
+const Command_Restore = 'Command_Restore'
+const Command_Close = 'Command_Close'
 
 /** @type {BrowserWindow} browser window */
 var mainWindow = null
 
-const sendWindowEvent = (win, name, value, frame) => {
+const sendSignal = (win, name, value, frame) => {
     frame = frame || win.webContents.mainFrame
-    const valueStr = JSON.stringify(value)
+    const jsonValue = JSON.stringify(value)
     const code = "if (typeof signal != 'undefined') signal('"
         + name
-        + "','"
-        + valueStr
-        + "')"
-    console.log("⚡ SIGNAL ⚡ " + name + " ----- " + valueStr)
+        + "',"
+        + jsonValue
+        + ")"
+    console.log("⚡ SIGNAL ⚡ " + name + ' 📚 ' + jsonValue)
     frame.executeJavaScript(code)
+}
+
+/** set main window fullscreen state */
+const setMainWindowFullscreen = () => {
+    console.debug("🔵 set fullscreen")
+    if (mainWindow.isMinimized()) mainWindow.restore()
+    mainWindow.setFullScreen(true)
+}
+
+/** minimize main window */
+const minimizeMainWindow = () => {
+    console.debug("🔵 minimize")
+    mainWindow.minimize()
+}
+
+const toggleMainWindowOnTop = () => {
+    console.debug("🔵 toggle on top: "+mainWindow.isAlwaysOnTop()+ " " + (!mainWindow.isAlwaysOnTop()))
+    mainWindow.setAlwaysOnTop(!mainWindow.isAlwaysOnTop())
 }
 
 /** toggle main window state (fullscreen -> restore -> minimized -> fullscreen */
@@ -74,15 +97,24 @@ const toggleMainWindowState = () => {
     }
 }
 
+const registerShortcut = (shortcut,fun) => {
+    const check = globalShortcut.register(shortcut, () => {
+        console.debug("#️⃣  "+shortcut+" pressed");
+        fun()
+    });
+    if (check) console.debug("🟢 "+shortcut+" registered successfully");
+}
+
 /** setup keyboard shortcuts  */
 const setupKeyboardShortcuts = () => {
 
-    var check = globalShortcut.register(Shortcut_MainWindow_ToggleState, () => {
-        console.debug("#️⃣  "+Shortcut_MainWindow_ToggleState+" pressed");
-        toggleMainWindowState()
-    });
-    if (check) console.debug("🟢 "+Shortcut_MainWindow_ToggleState+" registered successfully");
+    console.debug("🟣 setup keyboard shortcuts")
 
+    registerShortcut(Shortcut_MainWindow_ToggleState, () => toggleMainWindowState() );
+    registerShortcut(Shortcut_MainWindow_Fullscreen, () => setMainWindowFullscreen() );
+    registerShortcut(Shortcut_MainWindow_Minimize, () => minimizeMainWindow() );
+    registerShortcut(Shortcut_MainWindow_ToggleOnTop, () => toggleMainWindowOnTop() );
+    
     /*globalShortcut.registerAll(["CommandOrControl+X",
         "CommandOrControl+Y"], () => {
             console.log("One Global Shortcut defined " +
@@ -96,42 +128,42 @@ const setupKeyboardShortcuts = () => {
  */
 const setupEvents = win => {
 
-    console.debug("setup events");
+    console.debug("🟣 setup events");
 
     win.webContents.on(
         'did-frame-navigate',
         (event, url, httpResponseCode, httpStatusText, isMainFrame, frameProcessId, frameRoutingId) => {
             const frame = webFrameMain.fromId(frameProcessId, frameRoutingId)
             if (frame) {
-                sendWindowEvent(win, Signal_Window_DidNavigate, url, frame)
+                sendSignal(win, Signal_Window_DidNavigate, url, frame)
             }
         }
     )
 
     win.on('enter-full-screen', (event, isAlwaysOnTop) => {
-        sendWindowEvent(win, Signal_Window_State_Changed_Enter_FullScreen, {})
+        sendSignal(win, Signal_Window_State_Changed_Enter_FullScreen, {})
     })
     win.on('leave-full-screen', (event, isAlwaysOnTop) => {
-        sendWindowEvent(win, Signal_Window_State_Changed_Leave_FullScreen, {})
+        sendSignal(win, Signal_Window_State_Changed_Leave_FullScreen, {})
     })
     win.on('minimize', (event, isAlwaysOnTop) => {
-        sendWindowEvent(win, Signal_Window_State_Changed_Minimize, {})
+        sendSignal(win, Signal_Window_State_Changed_Minimize, {})
     })
     win.on('restore', (event, isAlwaysOnTop) => {
-        sendWindowEvent(win, Signal_Window_State_Changed_Restore, {})
+        sendSignal(win, Signal_Window_State_Changed_Restore, {})
     })
     win.on('maximize', (event, isAlwaysOnTop) => {
-        sendWindowEvent(win, Signal_Window_State_Changed_Maximize, {})
+        sendSignal(win, Signal_Window_State_Changed_Maximize, {})
     })
     win.on('unmaximize', (event, isAlwaysOnTop) => {
-        sendWindowEvent(win, Signal_Window_State_Changed_Unmaximize, {})
+        sendSignal(win, Signal_Window_State_Changed_Unmaximize, {})
     })
 }
 
 /** create window */
 const createWindow = () => {
 
-    console.debug("create window");
+    console.debug("🟣 create window");
 
     const refW = 1920
     const refH = 1080
@@ -196,14 +228,14 @@ const createWindow = () => {
         console.debug("⭐⚡ready-to-show: show");
 
         win.show()
-        sendWindowEvent(win, Signal_Window_State_Changed_Enter_FullScreen, {})
+        sendSignal(win, Signal_Window_State_Changed_Enter_FullScreen, {})
     })
 }
 
 /** create tray */
 const createTray = () => {
 
-    console.debug("create tray");
+    console.debug("🟣 create tray");
 
     const icon = nativeImage.createFromPath('./img/icon.png')
     const tray = new Tray(icon)
@@ -222,10 +254,17 @@ const createTray = () => {
 /** setup ipc */
 const setupIpc = () => {
 
-    console.debug("setup Ipc");
+    console.debug("🟣 setup Ipc");
 
-    ipcMain.handle('send', (signal, data) => {
-        console.log("⭐⚡[main] handle signal: " + signal)
+    ipcMain.handle('send', (e, ...args) => {
+        var signal = args[0]
+        var data = args[1]
+        console.debug("⭐⚡[main] handle signal: " + signal + ' 📚 '
+            + args[0]
+            + ' 📚 ' + JSON.stringify(args[1]))
+        
+        var f = eval("Handle_"+signal)
+        if (f) f(e,data)            
     })
 }
 
@@ -233,9 +272,9 @@ app.whenReady().then(() => {
 
     console.debug("⭐⚡whenReady: create window");
 
+    nativeTheme.themeSource = "dark"
     setupIpc()
     setupKeyboardShortcuts()
-    nativeTheme.themeSource = "dark"
     createTray()
     createWindow()
 
@@ -257,3 +296,15 @@ app.on('window-all-closed', () => {
     // to stay active until the user quits explicitly with Cmd + Q
     if (process.platform !== 'darwin') app.quit()
 })
+
+// ------------ command handlers ------------
+
+const Handle_Command_Maximize = () => mainWindow.maximize()
+
+const Handle_Command_Minimize = () => mainWindow.minimize()
+
+const Handle_Command_Restore = () => mainWindow.restore()
+
+const Handle_Command_Close = () => app.quit()
+
+const Handle_Command_Fullscreen = () => mainWindow.setFullScreen(true)
