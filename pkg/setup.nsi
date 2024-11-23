@@ -16,8 +16,8 @@
 !define READMEFILEINST "readme.txt"
 !define LICENSEFILE "assets\\license.rtf"
 !define READMEFILE "assets\\readme.txt"
-!define COMPANYNAME "Franck Gaspoz Software"
-!define DESCRIPTION "Display && browse movie catalogs"
+!define COMPANYNAME "Moutain Peasant's Software"
+!define DESCRIPTION "Display and browse movie catalogs"
 
 !define VERSIONMAJOR 1
 !define VERSIONMINOR 0
@@ -43,8 +43,10 @@ InstallDir "$PROGRAMFILES64\\${APPNAME}"
  
 # rtf or txt file - remember if it is txt, it must be in the DOS text format (\r\n)
 LicenseData "${LICENSEFILE}"
-# This will be in the installer/uninstaller's title bar
-Name "${APPNAME}"
+
+# ----------- This will be in the installer/uninstaller's title bar ------------------
+
+Name "${APPNAME} - ${COMPANYNAME}"
 Icon "${ICONFILE}"
 outFile "${APPNAME}-${APPVER}.exe"
 
@@ -53,7 +55,7 @@ outFile "${APPNAME}-${APPVER}.exe"
 !define MUI_PAGE_HEADER_TEXT "${APPNAME} ${APPVER}"
 !define MUI_PAGE_HEADER_SUBTEXT "${DESCRIPTION}"
 
-!define MUI_BRANDING_TEXT "${COMPANYNAME} ${APPNAME} ${APPVER}"
+!define MUI_BRANDING_TEXT "${COMPANYNAME} ${APPNAME} ${APPVER}"		; effect where, if any ?
 
 !define MUI_WELCOMEPAGE_TEXT "Welcome to the setup program of ${APPNAME} ${APPVER}.$\n$\nThe Setup Assistant will guide you through the complete setup and configuration of ${APPNAME} version ${APPVER}.$\n$\nClick the button 'Next' to begin the installation. Click on the button 'Cancel' to abort the installation and close the setup assistant"
 !define MUI_WELCOMEPAGE_TITLE "${APPNAME} ${APPVER}$\n${DESCRIPTION}"
@@ -73,7 +75,7 @@ outFile "${APPNAME}-${APPVER}.exe"
 !define MUI_ICON "${ICONFILE}"
 !define MUI_UNICON "${ICONFILE}"
 
-!define MUI_BGCOLOR 111122
+!define MUI_BGCOLOR 004477
 !define MUI_TEXTCOLOR EEEEEE
 !define MUI_HEADERIMAGE_RIGHT
 !define MUI_HEADER_TRANSPARENT_TEXT
@@ -83,17 +85,17 @@ outFile "${APPNAME}-${APPVER}.exe"
 !define MUI_LICENSEPAGE_RADIOBUTTONS
 
 !define MUI_FINISHPAGE_RUN "${APPEXE}"
-!define MUI_FINISHPAGE_SHOWREADME "${READMEFILE}"
+!define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\\${READMEFILEINST}"
 !define MUI_FINISHPAGE_NOREBOOTSUPPORT
 !define MUI_FINISHPAGE_LINK_COLOR AAAAFF
-!define MUI_FINISHPAGE_LINK "more on GitHub: Movie Db Assistant | Movie Db Scraper"
+!define MUI_FINISHPAGE_LINK "Get more on GitHub, check: Movie Db Assistant | Movie Db Scraper"
 !define MUI_FINISHPAGE_LINK_LOCATION "${ABOUTURL}"
 
 # the old style gradiant behind setup window
 #BGGradient
 #AutoCloseWindow true
 BrandingText " "
-Caption "${APPNAME} ${APPVER} Setup"
+Caption "${APPNAME} ${APPVER} Setup | ${COMPANYNAME}"
 #InstallColors EEEEEE 000000 #no effect
 ShowInstDetails show
 
