@@ -1,30 +1,41 @@
+#----------------------------------------------------------------- 
 # Movie Db Viewer
+# NullSoft install script
+#----------------------------------------------------------------- 
+
+!include MUI2.nsh
+
+#----------------- properties ------------------------------------------------ 
 
 !define APPNAME "Movie Db Viewer"
 !define APPEXE "Electron Test App.exe"
 !define UNINSTALLEXE "uninstall.exe"
+!define BMPFILE "assets\\moviedbviewersnap1.bmp"
 !define ICONFILE "assets\\movie.ico"
 !define ICONFILEINST "movie.ico"
 !define LICENSEFILE "assets\\license.rtf"
 !define COMPANYNAME "Franck Gaspoz Software"
-!define DESCRIPTION "interactive movie db catalog viewer"
-# These three must be integers
+!define DESCRIPTION "Display && browse movie catalogs"
+
 !define VERSIONMAJOR 1
 !define VERSIONMINOR 0
 !define VERSIONBUILD 0
+!define APPVER "${VERSIONMAJOR}.${VERSIONMINOR}.${VERSIONBUILD}"
+
 # These will be displayed by the "Click here for support information" link in "Add/Remove Programs"
 # It is possible to use "mailto:" links in here to open the email client
-!define HELPURL "https://github.com/franck-gaspoz/MovieDbAssistant/blob/main/README.md" # "Support Information" link
-!define UPDATEURL "https://github.com/franck-gaspoz/MovieDbAssistant/blob/main/README.md" # "Product Updates" link
-!define ABOUTURL "hhttps://github.com/franck-gaspoz/MovieDbAssistant/blob/main/README.md" # "Publisher" link
+!define HELPURL "https://github.com/franck-gaspoz/MovieDbAssistant/blob/main/README.md" ; "Support Information" link
+!define UPDATEURL "https://github.com/franck-gaspoz/MovieDbAssistant/blob/main/README.md" ; "Product Updates" link
+!define ABOUTURL "hhttps://github.com/franck-gaspoz/MovieDbAssistant/blob/main/README.md" ; "Publisher" link
 
 # files from package (out/)
 !define PKG "../out/Electron Test App-win32-x64"
-
 # This is the size (in kB) of all the files copied into "Program Files"
 !define INSTALLSIZE 281411
- 
-RequestExecutionLevel admin ;Require admin rights on NT6+ (When UAC is turned on)
+
+!define ACCOUNTTYPE admin
+
+RequestExecutionLevel "${ACCOUNTTYPE}" ;Require admin rights on NT6+ (When UAC is turned on) - user for speed test (no prompt)
  
 InstallDir "$PROGRAMFILES64\\${APPNAME}"
  
@@ -33,19 +44,69 @@ LicenseData "${LICENSEFILE}"
 # This will be in the installer/uninstaller's title bar
 Name "${APPNAME}"
 Icon "${ICONFILE}"
-outFile "${APPNAME}-${VERSIONMAJOR}.${VERSIONMINOR}.${VERSIONBUILD}.exe"
- 
+outFile "${APPNAME}-${APPVER}.exe"
+
+#----------------- interface settings ------------------------------------------------ 
+
+!define MUI_PAGE_HEADER_TEXT "${APPNAME} ${APPVER}"
+!define MUI_PAGE_HEADER_SUBTEXT "${DESCRIPTION}"
+
+!define MUI_BRANDING_TEXT "${COMPANYNAME} ${APPNAME} ${APPVER}"
+
+!define MUI_WELCOMEPAGE_TEXT "Welcome to the setup program of ${APPNAME} ${APPVER}.$\n$\nThe Setup Assistant will guide you through the complete setup and configuration of ${APPNAME} version ${APPVER}.$\n$\nClick the button 'Next' to begin the installation. Click on the button 'Cancel' to abort the installation and close the setup assistant"
+!define MUI_WELCOMEPAGE_TITLE "${APPNAME} ${APPVER}$\n${DESCRIPTION}"
+#!define MUI_WELCOMEPAGE_TITLE_3LINES "${DESCRIPTION}"
+!define MUI_WELCOMEFINISHPAGE_BITMAP "${BMPFILE}"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${BMPFILE}"
+
+#!define MUI_LICENSEPAGE_TEXT_TOP "${APPNAME} ${APPVER}"
+#!define MUI_LICENSEPAGE_TEXT_BOTTOM "bottom text test"
+
+#!define MUI_HEADERIMAGE_BITMAP_STRETCH NoStretchNoCropNoAlign
+#!define MUI_HEADERIMAGE_UNBITMAP_STRETCH NoStretchNoCropNoAlign
+#!define MUI_WELCOMEFINISHPAGE_BITMAP_STRETCH NoStretchNoCropNoAlign
+
+!define MUI_HEADERIMAGE_BITMAP "${ICONFILE}"
+!define MUI_HEADERIMAGE_UNBITMAP "${ICONFILE}"
+!define MUI_ICON "${ICONFILE}"
+!define MUI_UNICON "${ICONFILE}"
+
+!define MUI_TEXTCOLOR EEEEEE
+!define MUI_HEADERIMAGE_RIGHT
+!define MUI_HEADER_TRANSPARENT_TEXT
+!define MUI_BGCOLOR 111122
+
+# the old style gradiant behind setup window
+#BGGradient
+AutoCloseWindow true
+BrandingText " "
+Caption "${APPNAME} ${APPVER} Setup"
+InstallColors EEEEEE 000000 #no effect
+
 !include LogicLib.nsh
- 
-# Just three pages - license agreement, install location, and installation
-page license
-page directory
-Page instfiles
- 
+
+#----------------- pages ------------------------------------------------------------------- 
+
+#page license
+!insertmacro MUI_PAGE_WELCOME
+!insertmacro MUI_PAGE_LICENSE "${LICENSEFILE}"
+#!insertmacro MUI_PAGE_COMPONENTS
+#page directory
+!insertmacro MUI_PAGE_DIRECTORY
+#Var StartMenuFolder
+#!insertmacro MUI_PAGE_STARTMENU "Application" $StartMenuFolder
+#Page instfiles
+!insertmacro MUI_PAGE_INSTFILES
+!insertmacro MUI_PAGE_FINISH
+
+!insertmacro MUI_LANGUAGE "English"
+
+#----------------- code install / uninstall ------------------------------------------------ 
+
 !macro VerifyUserIsAdmin
 UserInfo::GetAccountType
 pop $0
-${If} $0 != "admin" ;Require admin rights on NT4+
+${If} $0 != "${ACCOUNTTYPE}" ;Require admin rights on NT4+
         messageBox mb_iconstop "Administrator rights required!"
         setErrorLevel 740 ;ERROR_ELEVATION_REQUIRED
         quit
@@ -65,7 +126,7 @@ section "install"
 	#file "logo.ico"
 
 	file "${ICONFILE}"
-	file /r "${PKG}\\*.*" 
+	#file /r "${PKG}\\*.*" 	; disabled for speed
 
 	# Add any other files for the install directory (license files, app data, etc) here
  
@@ -102,7 +163,7 @@ function un.onInit
 	SetShellVarContext all
  
 	#Verify the uninstaller - last chance to back out
-	MessageBox MB_OKCANCEL "Permanantly remove ${APPNAME}?" IDOK next
+	MessageBox MB_OKCANCEL "Dou you really want to uninstall ${APPNAME} and all its components ?" IDOK next
 		Abort
 	next:
 	!insertmacro VerifyUserIsAdmin

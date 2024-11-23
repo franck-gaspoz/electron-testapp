@@ -4,7 +4,7 @@
 
 https://www.electronjs.org/docs/latest/tutorial/tutorial-first-app
 
-// dos (ps: marche pas)
+// dos (befores start command)
 chcp 65001
 
 npm init
