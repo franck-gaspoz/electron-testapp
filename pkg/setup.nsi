@@ -46,7 +46,7 @@ LicenseData "${LICENSEFILE}"
 
 # ----------- This will be in the installer/uninstaller's title bar ------------------
 
-Name "${APPNAME} - ${COMPANYNAME}"
+Name "${COMPANYNAME} ${APPNAME}"
 Icon "${ICONFILE}"
 outFile "${APPNAME}-${APPVER}.exe"
 
@@ -58,8 +58,8 @@ outFile "${APPNAME}-${APPVER}.exe"
 !define MUI_BRANDING_TEXT "${COMPANYNAME} ${APPNAME} ${APPVER}"		; effect where, if any ?
 
 !define MUI_WELCOMEPAGE_TEXT "Welcome to the setup program of ${APPNAME} ${APPVER}.$\n$\nThe Setup Assistant will guide you through the complete setup and configuration of ${APPNAME} version ${APPVER}.$\n$\nClick the button 'Next' to begin the installation. Click on the button 'Cancel' to abort the installation and close the setup assistant"
-!define MUI_WELCOMEPAGE_TITLE "${APPNAME} ${APPVER}$\n${DESCRIPTION}"
-#!define MUI_WELCOMEPAGE_TITLE_3LINES "${DESCRIPTION}"
+!define MUI_WELCOMEPAGE_TITLE "${COMPANYNAME}$\n${APPNAME} ${APPVER}$\n${DESCRIPTION}"
+!define MUI_WELCOMEPAGE_TITLE_3LINES
 !define MUI_WELCOMEFINISHPAGE_BITMAP "${BMPFILE}"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "${BMPFILE}"
 
@@ -88,7 +88,7 @@ outFile "${APPNAME}-${APPVER}.exe"
 !define MUI_FINISHPAGE_SHOWREADME "$INSTDIR\\${READMEFILEINST}"
 !define MUI_FINISHPAGE_NOREBOOTSUPPORT
 !define MUI_FINISHPAGE_LINK_COLOR AAAAFF
-!define MUI_FINISHPAGE_LINK "Get more on GitHub, check: Movie Db Assistant | Movie Db Scraper"
+!define MUI_FINISHPAGE_LINK "Get more on GitHub: Movie Db Assistant + Web Spiders !"
 !define MUI_FINISHPAGE_LINK_LOCATION "${ABOUTURL}"
 
 # the old style gradiant behind setup window

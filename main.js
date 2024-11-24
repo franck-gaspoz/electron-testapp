@@ -206,13 +206,14 @@ const createWindow = () => {
     mainWindow = win
     ////win.setTitleBarOverlay({ color: 'red', 'symbolColor': 'blue', height: 16 })
     //win.loadFile('index.html')
-    //win.loadFile('C:\\Users\\franc\\source\\repos\\MovieDbAssistant\\MovieDbAssistant.App\\bin\\Debug\\net8.0-windows10.0.22621.0\\win-x64\\output\\Catalog Nov. 2024\\index.html')
-    win.loadFile('C:\\Users\\franc\\source\\repos\\MovieDbAssistant\\MovieDbAssistant.App\\bin\\Debug\\net8.0-windows10.0.22621.0\\win-x64\\output\\Sample catalog\\index.html')
+    win.loadFile('C:\\Users\\franc\\source\\repos\\MovieDbAssistant\\MovieDbAssistant.App\\bin\\Debug\\net8.0-windows10.0.22621.0\\win-x64\\output\\Catalog Nov. 2024\\index.html')
+    //win.loadFile('C:\\Users\\franc\\source\\repos\\MovieDbAssistant\\MovieDbAssistant.App\\bin\\Debug\\net8.0-windows10.0.22621.0\\win-x64\\output\\Sample catalog\\index.html')
     
-    win.setPosition(
-        0,//1920,
-        -1080,
-        false)     // for dev
+    if (false)
+        win.setPosition(
+            0,//1920,
+            -1080,
+            false)     // for dev
 
     win.center()
     setupEvents(win)

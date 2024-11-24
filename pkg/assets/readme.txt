@@ -2,7 +2,7 @@
 About Movie Db Viewer
 ------------------------------------------------------------------------
 
-Publisher: Franck Gaspoz's Software
+Publisher: Moutain Peasant's Software
 Date: 2024/23/11
 License: GPLv3 https://raw.githubusercontent.com/franck-gaspoz/MovieDbAssistant/refs/heads/main/LICENSE
 
@@ -12,7 +12,7 @@ Check the Movie Db Project to discover more tools:
 
     check https://github.com/franck-gaspoz/MovieDbAssistant
 
-- scrap IMDB using CLI with Movie Db Scraper
+- scrap IMDB using CLI with Movie Db Spiders
 
     check https://github.com/franck-gaspoz/MovieDbSpiders
 
